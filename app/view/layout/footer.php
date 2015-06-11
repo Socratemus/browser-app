@@ -1,5 +1,5 @@
     </section>
-    <footer>
+    <footer class="container-fluid">
         THE FOOTER
     </footer>
     

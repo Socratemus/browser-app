@@ -7,7 +7,7 @@ class Router {
     private $_params;
     
     const DEFAULT_CONTROLLER  = 'Index';
-    const DEFAULT_METHOD  = 'Index';
+    const DEFAULT_METHOD  = 'IndexAction';
     
     public function __construct(){
         //Verificam sa avem ruta asteptata
@@ -25,7 +25,7 @@ class Router {
     }
     
     public function getMethod(){
-        return isset($this->_params[1]) ? ucfirst($this->_params[1]) : self::DEFAULT_METHOD;
+        return isset($this->_params[1]) ? ucfirst($this->_params[1]) . 'Action' : self::DEFAULT_METHOD;
     }
     
     

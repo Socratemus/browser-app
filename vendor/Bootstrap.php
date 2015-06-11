@@ -52,6 +52,7 @@ class Bootstrap {
     }
     
     private function run(){
+        @session_start();
         self::$Controller = get_class($this->_controller);
         self::$Method = $this->_method;
         //Trebuie sa pasam si parametrii metodei la apelare

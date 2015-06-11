@@ -12,12 +12,7 @@ class BrowserService extends Model {
         
     }
     
-    public function test() {
-        
-        echo 'testing the model <br />';
-    }
-    
-    public function getBrowser(){
+    public function getBrowser(){ // Ar trebui mutat intrun Util ::getBrowser -> + sa intoarca IE
         if(strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE)
             return 'Internet explorer';
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== FALSE) //For Supporting IE 11
@@ -41,17 +36,27 @@ class BrowserService extends Model {
         
         return 'something';
     }
-    
-    public function getAllPortals(){
-        $sql = "SELECT * FROM portals_prt
-                
-        "; //JOIN browser_portal ON (browser_portal.id_prt = portals_prt.id_prt)
+
+    public function getAllBrowsers(){
+        $sql = "SELECT * FROM browser_types_brt";
         $stmt = $this->__connection->prepare($sql);
         $stmt->execute();
         $return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        //var_dump($return);exit();
         
-        return $return;
+        if(empty($return)) {
+            return array();
+        } 
+        
+        //Hydrate data
+        $ret = array();
+        foreach($return as $dataset){
+            $brs = new \app\entity\Browser();
+            $brs->exchange($dataset);
+            array_push($ret,$brs);
+            unset($brs);
+        }
+      
+        return $ret;
     }
     
 }

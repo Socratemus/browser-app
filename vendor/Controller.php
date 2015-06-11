@@ -21,4 +21,12 @@ class Controller {
         return $this->__view;
     }
     
+    protected function redirect( $Token ) {
+        $path = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?q=';
+       
+        $path .= $Token;
+        
+        header("Location: $path");
+    }
+    
 }
