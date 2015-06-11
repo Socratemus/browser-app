@@ -12,6 +12,9 @@ class Router {
     public function __construct(){
         //Verificam sa avem ruta asteptata
         if(! isset( $_GET['q']) || empty( $_GET['q'] )) {
+             $path = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?q=index';
+             header("Location: $path");
+            //header("Location : " . 'https://browser-app-socratemus.c9.io/' . '?q=index');
             exit('there is no query params... cant route it!');
         }
         $q = $_GET['q'];

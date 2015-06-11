@@ -16,19 +16,6 @@ class PortalService extends Model {
      * Intoarce toate portalele.
      */
     public function getAllPortals(){
-        /*
-        select pp.id_prt AS PortalId , pp.name_prt AS PortalName,
-        	pp.url_prt AS PortalUrl,
-         	bp.rate AS PortalRate,
-        	btb.name_brt AS BrowserName,
-        	btb.acronym_brt as BrowserAcronim,
-        	btb.keyword as BrowserKeyword
-        
-        from portals_prt pp
-        left JOIN browser_portal bp on (bp.id_prt = pp.id_prt)
-        left join browser_types_brt btb on (btb.id_brt = bp.id_brt )
-        */
-        
         $sql = "SELECT * FROM portals_prt
                 
         ";
@@ -38,15 +25,25 @@ class PortalService extends Model {
         
         return $return;
     }
-    
+    public function getAllPortalsByBrowser($BrowserId){
+        $sql = "SELECT * FROM portals_prt pp
+                JOIN browser_portal as bp ON (bp.id_prt = pp.id_prt)
+                WHERE bp.id_brt = :id_brt
+        ";
+        $stmt = $this->__connection->prepare($sql);
+        $stmt->bindValue(':id_brt' , $BrowserId);
+        $stmt->execute();
+        $return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $return;
+    }
     /**
      *  Intoarce un portal dupa Id. 
      */
     public function getPortalById($Id){
         
         $sql = "SELECT pp.*, bp.rate , btb.* FROM `portals_prt` as pp
-                JOIN browser_portal as bp ON (bp.id_prt = pp.id_prt)
-                JOIN browser_types_brt btb ON (btb.id_brt = bp.id_brt)
+                LEFT JOIN browser_portal as bp ON (bp.id_prt = pp.id_prt)
+                LEFT JOIN browser_types_brt btb ON (btb.id_brt = bp.id_brt)
                 where pp.id_prt = :id
             ";
         $stmt = $this->__connection->prepare($sql);
@@ -61,12 +58,13 @@ class PortalService extends Model {
         
         $rates = array(); 
         foreach($return as $dataset){
-            
-            $brs = new \app\entity\Browser();
-            $brs->exchange($dataset);
-            $brs->setRate($dataset['rate']);
-            $rates[$brs->getIdBrt()] = $brs;
-            unset($brs);
+            if(isset($dataset['id_brt'])){
+                $brs = new \app\entity\Browser();
+                $brs->exchange($dataset);
+                $brs->setRate($dataset['rate']);
+                $rates[$brs->getIdBrt()] = $brs;
+                unset($brs);
+            }
         }
         $portal->setRates($rates);
         
@@ -134,10 +132,87 @@ class PortalService extends Model {
         }
     }
     
+    /**
+     * Update portal data
+     */
     public function updatePortal($Data){
+        //Update portal
+        try 
+        {
+            $sql = "UPDATE `portals_prt` pp 
+                SET pp.`name_prt`= :name_prt, 
+                    pp.`url_prt`=:url_prt 
+                WHERE pp.id_prt = :id_prt";
+            $stmt = $this->__connection->prepare($sql);
+            $stmt->bindParam(':name_prt', $Data['name_prt']);
+            $stmt->bindParam(':url_prt', $Data['url_prt']);
+            $stmt->bindParam(':id_prt', $Data['id_prt']);
+            $stmt->execute();
+             
+            foreach($Data['BrowserRate'] as $id_brt => $rate ) {
+                //verificare existenta rate.
+                if($this->getPortalToBrowser( $Data['id_prt'] , $id_brt)){
+                    $sql = "UPDATE `browser_portal` bp SET bp.`rate`= :rate
+                        WHERE id_prt = :id_prt AND id_brt = :id_brt";
+                    $stmt = $this->__connection->prepare($sql);
+                    $stmt->bindParam(':rate', $rate);
+                    $stmt->bindParam(':id_prt', $Data['id_prt']);
+                    $stmt->bindParam(':id_brt', $id_brt);
+                    $stmt->execute();    
+                } else {
+                    //Facem insert
+                    $sql = "INSERT INTO browser_portal(id_brt , id_prt , rate) VALUES (:id_brt , :id_prt , :rate); ";
+                    $stmt = $this->__connection->prepare($sql);
+                    $stmt->bindParam(':rate', $rate);
+                    $stmt->bindParam(':id_prt', $Data['id_prt']);
+                    $stmt->bindParam(':id_brt', $id_brt);
+                    $stmt->execute();
+                }
+            }
+            \vendor\Session::setFlashMessage('success_message' , 'Portal salvat cu succes.');
+        }
+        catch ( \Exception $e) 
+        {
+            throw new \Exception($e->getMessage());   
+        }
+    }
+    
+    /**
+     *  Sterge un portal.
+     */
+    public function remove($PortalId){
+        try
+        {
+            $sql = "DELETE FROM `portals_prt` WHERE id_prt = :id";
+            $stmt = $this->__connection->prepare($sql);
+            $stmt->bindParam(':id', $PortalId);
+            $stmt->execute();
+            \vendor\Session::setFlashMessage('success_message' , 'Portal sters cu succes.');
+        }
+        catch(\Exception $e)
+        {
+            throw new \Exception($e->getMessage());   
+        }
+    }
+    
+    /**
+     *  Verifica daca exista relatie intre portal si browser. 
+     */
+    private function getPortalToBrowser($IdPortal , $IdBrowser) {
         
-        
-        exit('updating...');
+        $sql = "SELECT bp.id_prt FROM browser_portal bp
+                WHERE bp.id_prt = :id_prt AND bp.id_brt = :id_brt
+            ";
+            $stmt = $this->__connection->prepare($sql);
+            $stmt->bindParam(':id_prt', $IdPortal);
+            $stmt->bindParam(':id_brt', $IdBrowser);
+            $stmt->execute();
+            $return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if(empty($return)) {
+                return false;   
+            } else {
+                return true;
+            }
     }
     
     /**

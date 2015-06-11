@@ -14,29 +14,23 @@ class BrowserService extends Model {
     
     public function getBrowser(){ // Ar trebui mutat intrun Util ::getBrowser -> + sa intoarca IE
         if(strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE)
-            return 'Internet explorer';
+            return 'IE';
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Trident') !== FALSE) //For Supporting IE 11
-            return 'Internet explorer';
+            return 'IE';
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Firefox') !== FALSE)
-            return 'Mozilla Firefox';
+            return 'FF';
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome') !== FALSE)
-            return 'Google Chrome';
+            return 'GC';
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Opera Mini') !== FALSE)
-            return "Opera Mini";
+            return "OM";
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== FALSE)
-            return "Opera";
+            return "OP";
         elseif(strpos($_SERVER['HTTP_USER_AGENT'], 'Safari') !== FALSE)
-            return "Safari";
+            return "SF";
         else
-            return 'Unknown';
+            return 'UNK';
     }
     
-    public function getPortal(){
-        
-        
-        return 'something';
-    }
-
     public function getAllBrowsers(){
         $sql = "SELECT * FROM browser_types_brt";
         $stmt = $this->__connection->prepare($sql);
@@ -57,6 +51,25 @@ class BrowserService extends Model {
         }
       
         return $ret;
+    }
+    
+    public function getBrowserByAcronym($Acronym){
+        //echo $Acronym;exit();
+        
+        $sql = "SELECT * FROM browser_types_brt bt WHERE bt.acronym_brt = :acronym_brt";
+        $stmt = $this->__connection->prepare($sql);
+        $stmt->bindParam(':acronym_brt' , $Acronym);
+        $stmt->execute();
+        $return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        if(isset($return[0])){
+            $browser = new \app\entity\Browser();
+            $browser->exchange($return[0]);
+            return $browser; 
+        } else {
+            return null;
+        }
+        var_dump($return);
+        exit();
     }
     
 }

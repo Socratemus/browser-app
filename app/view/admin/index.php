@@ -36,7 +36,7 @@
                 </td>
                 
                 <td>
-                    <a href="" class="btn btn-danger"><i class="fa fa-remove"></i></a>
+                    <a href="<?php echo $this->url('admin/delete' , array('id' => $portal['id_prt']))?>" class="btn btn-danger"><i class="fa fa-remove"></i></a>
                 </td>
                 
             </tr>
