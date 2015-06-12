@@ -30,10 +30,32 @@ use app\model as Model;
        $browser = $this->_browserService->getBrowserByAcronym($browserAcronym);
        $portals = $this->_portalService->getAllPortalsByBrowser($browser->getIdBrt());
        //var_dump($portals);exit();
+       //Detect wich portal is shown
+       
+       $found = false;
+       $selPrt = null;
+       while(!$found){
+           $sels = array();
+           $chance = rand(1,100);
+           //echo 'Try with : ' .$chance . "<br/>";
+           foreach($portals as $prt){
+               //var_dump($prt); exit();
+               if($chance < $prt->getRates()[0]->getRate()){
+                  array_push($sels , $prt);
+                  //echo $prt->getNamePrt()  . ' is a winner <br/>';
+                  $selPrt = $prt;
+                  $found = true;
+               }
+           }
+           
+       }
+       shuffle($sels);
+       $selPrt = array_pop($sels);
+       
        $this->getView()->setVariable('browser' , $browser);
-       
        $this->getView()->setVariable('portals' , $portals);
-       
+       $this->getView()->setVariable('selPortal' , $selPrt);
+       $this->getView()->setVariable('change' , $chance);
        $this->getView()->render('index/index');
     }
      

@@ -28,13 +28,31 @@ class PortalService extends Model {
     public function getAllPortalsByBrowser($BrowserId){
         $sql = "SELECT * FROM portals_prt pp
                 JOIN browser_portal as bp ON (bp.id_prt = pp.id_prt)
+                LEFT JOIN browser_types_brt btb ON (btb.id_brt = bp.id_brt)
                 WHERE bp.id_brt = :id_brt
         ";
         $stmt = $this->__connection->prepare($sql);
         $stmt->bindValue(':id_brt' , $BrowserId);
         $stmt->execute();
         $return = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $return;
+        
+        if(empty($return)){
+            return array();
+        } else {
+            $r = array();
+            foreach($return as $dataset) {
+                $portal = new \app\entity\Portal();
+                $portal->exchange($dataset);
+                $brs = new \app\entity\Browser();
+                $brs->exchange($dataset);
+                $brs->setRate($dataset['rate']);
+                $portal->setRates(array($brs));
+                
+                array_push($r , $portal);
+                //var_dump($dataset);
+            }
+           return $r;
+        }
     }
     /**
      *  Intoarce un portal dupa Id. 

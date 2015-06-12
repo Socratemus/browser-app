@@ -3,14 +3,19 @@
     
     <h5> Portals entries : </h5>
     
-    <ul>
+    <ul class="col-md-12" style="list-style : none;">
         <?php foreach( $this->portals as $portal) :?>
-        <li><?php echo $portal['name_prt']?> -- <?php echo $portal['rate']?>% </li>
+        <li class="col-md-12">
+            <span class="col-md-2"><?php echo $portal->getNamePrt()?></span>
+            <span class="col-md-1 text-center"><i class="fa fa-arrow-circle-right"></i> </span>
+            <span class="col-md-2"><?php echo $portal->getRates()[0]->getRate();?>% </span>
+        </li>
         <?php endforeach;?>
     </ul>
     
+    <!--<strong>Roll : <?php echo $this->change;?></strong>-->
     
-    <h4> Redirect to :  </h4>
+    <h4> Redirect to :  <em><?php echo $this->selPortal->getNamePrt();?></em></h4>
     
     <br /><br />
         <?php foreach($this->portals as $portal) :?>
