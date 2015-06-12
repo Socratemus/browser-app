@@ -9,8 +9,7 @@ use app\model as Model;
  * Index controller - 
  * Application entry point
  */
- 
- class Index extends Controller {
+class Index extends Controller {
      
     private $_browserService = null;
      
@@ -20,7 +19,11 @@ use app\model as Model;
        $this->_browserService = new Model\BrowserService();
        
     }
-    
+    /**
+     * Lading page
+     * Afiseaza portalele din cadrul browserului detectat.
+     * Afiseaza portalul catre care se face redirect.
+     */
     public function IndexAction(){
        $this->_portalService = new Model\PortalService();
        
@@ -28,21 +31,22 @@ use app\model as Model;
        $browserAcronym = $this->_browserService->getBrowser();
        
        $browser = $this->_browserService->getBrowserByAcronym($browserAcronym);
+       if($browser){
        $portals = $this->_portalService->getAllPortalsByBrowser($browser->getIdBrt());
-       //var_dump($portals);exit();
+       } else {
+           $portals = array();
+       }
        //Detect wich portal is shown
        
        $found = false;
        $selPrt = null;
-       while(!$found){
-           $sels = array();
+       
+       $sels = array();
+       while(!$found && !empty($portals)){
            $chance = rand(1,100);
-           //echo 'Try with : ' .$chance . "<br/>";
            foreach($portals as $prt){
-               //var_dump($prt); exit();
                if($chance < $prt->getRates()[0]->getRate()){
                   array_push($sels , $prt);
-                  //echo $prt->getNamePrt()  . ' is a winner <br/>';
                   $selPrt = $prt;
                   $found = true;
                }
@@ -52,6 +56,8 @@ use app\model as Model;
        shuffle($sels);
        $selPrt = array_pop($sels);
        
+       //Trimite datele catre view.
+        
        $this->getView()->setVariable('browser' , $browser);
        $this->getView()->setVariable('portals' , $portals);
        $this->getView()->setVariable('selPortal' , $selPrt);

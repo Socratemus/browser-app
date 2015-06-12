@@ -1,5 +1,5 @@
 <div class="container main">
-    <h3> Current Browser is : <em><strong><?php echo $this->browser->getNameBrt();?></strong></em> </h3>
+    <h3> Current Browser is : <em><strong><?php if($this->browser) echo $this->browser->getNameBrt(); else echo 'Broswerul nu a fost detectat.';?></strong></em> </h3>
     
     <h5> Portals entries : </h5>
     
@@ -14,12 +14,9 @@
     </ul>
     
     <!--<strong>Roll : <?php echo $this->change;?></strong>-->
-    
+    <?php if($this->selPortal) :?>
     <h4> Redirect to :  <em><a target="_blank" href="<?php echo $this->selPortal->getUrlPrt();?>"><?php echo $this->selPortal->getNamePrt();?></a></em></h4>
-    
-    <br /><br />
-        <?php foreach($this->portals as $portal) :?>
-        <!--<pre/><?php print_r($portal);?></pre>-->
-        <?php endforeach; ?>  
+    <?php endif;?>
+ 
 </div>
 

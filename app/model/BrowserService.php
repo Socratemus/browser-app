@@ -11,7 +11,9 @@ class BrowserService extends Model {
         $this->__connection = $this->getConnection();
         
     }
-    
+    /**
+     * Detecteaza browserul
+     */
     public function getBrowser(){ // Ar trebui mutat intrun Util ::getBrowser -> + sa intoarca IE
         if(strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE') !== FALSE)
             return 'IE';
@@ -31,6 +33,9 @@ class BrowserService extends Model {
             return 'UNK';
     }
     
+    /**
+     * Returneaza toate browserele.
+     */
     public function getAllBrowsers(){
         $sql = "SELECT * FROM browser_types_brt";
         $stmt = $this->__connection->prepare($sql);
@@ -53,6 +58,9 @@ class BrowserService extends Model {
         return $ret;
     }
     
+    /**
+     * Intoarce un browser duap acronymul sau
+     */
     public function getBrowserByAcronym($Acronym){
         //echo $Acronym;exit();
         
@@ -68,8 +76,6 @@ class BrowserService extends Model {
         } else {
             return null;
         }
-        var_dump($return);
-        exit();
     }
     
 }
