@@ -1,5 +1,4 @@
 # browser-app
-
 Aplicatia are ca entry point vendor\Bootstrap.php si are o structura de tip MVC.
 
 Routerul se face dupa parametrul ?q din url, primul segment reprezentand
