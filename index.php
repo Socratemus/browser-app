@@ -1,5 +1,5 @@
 <?php
-
+//Autoload app classes.
 function autoload($className)
 {
     $className = ltrim($className, '\\');
@@ -15,6 +15,5 @@ function autoload($className)
     require $fileName;
 }
 spl_autoload_register('autoload');
-
 
 $boostrap = new vendor\Bootstrap();

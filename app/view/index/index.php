@@ -15,7 +15,7 @@
     
     <!--<strong>Roll : <?php echo $this->change;?></strong>-->
     
-    <h4> Redirect to :  <em><?php echo $this->selPortal->getNamePrt();?></em></h4>
+    <h4> Redirect to :  <em><a target="_blank" href="<?php echo $this->selPortal->getUrlPrt();?>"><?php echo $this->selPortal->getNamePrt();?></a></em></h4>
     
     <br /><br />
         <?php foreach($this->portals as $portal) :?>

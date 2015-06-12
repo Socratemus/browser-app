@@ -12,10 +12,8 @@ class Router {
     public function __construct(){
         //Verificam sa avem ruta asteptata
         if(! isset( $_GET['q']) || empty( $_GET['q'] )) {
-             $path = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . '/?q=index';
+             $path = BASE_PATH . '/?q=index';
              header("Location: $path");
-            //header("Location : " . 'https://browser-app-socratemus.c9.io/' . '?q=index');
-            exit('there is no query params... cant route it!');
         }
         $q = $_GET['q'];
         $tmp = explode('/' , $q);
@@ -23,10 +21,16 @@ class Router {
         unset($tmp);
     }
     
+    /**
+     * Intoarce numele controllerului din URL.
+     */
     public function getController(){
         return isset($this->_params[0]) ? ucfirst($this->_params[0]) : self::DEFAULT_CONTROLLER;
     }
     
+    /**
+     * Intoarce numele metodei din URL
+     */
     public function getMethod(){
         return isset($this->_params[1]) ? ucfirst($this->_params[1]) . 'Action' : self::DEFAULT_METHOD;
     }

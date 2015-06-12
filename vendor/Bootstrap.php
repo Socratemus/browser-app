@@ -16,17 +16,16 @@ class Bootstrap {
 
     
     public  function __construct() {
-        
+        require_once 'app/config/constants.php';
         $this->_router = new Router();
         $this->delegateController();
         $this->delegateMethod();
         $this->run();
     }
     
-    private function loadDependencies(){
-        
-    }
-    
+    /**
+     * Instantiaza controllerul.
+     */
     private function delegateController(){
         $ctrl = $this->_router->getController();
         $ctrlPath = '\app\controller\\' . $ctrl;
@@ -38,6 +37,9 @@ class Bootstrap {
         }
     }
     
+    /**
+     * Seteaza metoda.
+     */
     private function delegateMethod(){
         $mtd = $this->_router->getMethod();
         
@@ -51,6 +53,9 @@ class Bootstrap {
         
     }
     
+    /**
+     *  Apelam metoda din controller. 
+     */
     private function run(){
         @session_start();
         self::$Controller = get_class($this->_controller);
